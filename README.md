@@ -60,6 +60,7 @@ messages with the
 ContactService interacts with the 
 [ContactDB](http://mxr.mozilla.org/mozilla-central/source/dom/contacts/fallback/ContactDB.jsm), 
 which is an IndexedDBHelper.
+
 The ContactManager uses the PermissionPromptHelper to request permission to perform any
 of these actions.
 These modules are all to be found in gecko `dom/contacts`.

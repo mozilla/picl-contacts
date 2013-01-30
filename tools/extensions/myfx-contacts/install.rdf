@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+  <Description about="urn:mozilla:install-manifest">
+    <!-- Unique ID for extension. Can be in e-mail address format or GUID format -->
+    <em:id>myfx-contacts@labs.mozilla.org</em:id>
+    <!-- Extension name displayed in Add-on Manager -->
+    <em:name>myfx-contacts.js</em:name>
+    <!-- Extension version number. There is a version numbering scheme you must follow -->
+    <em:version>0.1</em:version>
+    <!-- Brief description displayed in Add-on Manager -->
+    <em:description>Experiment in MyFirefox Contacts</em:description>
+    <!-- Name of extension's primary developer. Change to your name -->
+    <em:creator>jedp</em:creator>
+    <!-- Web page address through which extension is distributed -->
+    <em:homepageURL>http://github.com/mozilla/myfx-contacts/</em:homepageURL>
+
+    <em:unpack>true</em:unpack>
+    <em:bootstrap>true</em:bootstrap>
+    <em:type>2</em:type>
+
+    <em:targetApplication>
+      <Description>
+       <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+       <em:minVersion>6.0</em:minVersion>
+       <em:maxVersion>21.0.*</em:maxVersion>
+     </Description>
+      <Description>
+       <em:id>{3c2e2abc-06d4-11e1-ac3b-374f68613e61}</em:id>
+       <em:minVersion>6.0</em:minVersion>
+       <em:maxVersion>21.0.*</em:maxVersion>
+     </Description>
+    </em:targetApplication>
+    
+  </Description>
+</RDF>
