@@ -1,0 +1,14 @@
+{
+  "name": "myfx-contacts",
+  "description": "Experiment in synchronizing user contacts from FirefoxOS",
+  "version": "0.0.1",
+
+  "scripts": {
+    "start": "node ./server.js"
+  },
+
+  "devDependencies": {
+    "hapi": "0.11.3"
+  }
+}
+

@@ -138,7 +138,7 @@ this.Service.prototype = {
       }.bind(this));
 
       // XXX try/catch stringify
-      let body = JSON.stringify({body: bodyData});
+      let body = JSON.stringify(bodyData);
       let req = Cc['@mozilla.org/xmlextras/xmlhttprequest;1']
                   .createInstance(Ci.nsIXMLHttpRequest);
 
@@ -182,6 +182,7 @@ this.Service.prototype = {
            type: 'contact',
            id: contact.id,
            updated_at: (new Date()).getTime(),
+           action: aMessage.json.options.reason,
            data: contact.properties};
         this._outboundUpdates[contact.id] = update;
         this._updatesPending = true;
