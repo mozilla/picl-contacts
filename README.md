@@ -41,17 +41,21 @@ to the local server.
 
 This can be installed as an add-on for FirefoxOS.
 
-- ln -s `pwd`/tools/extensions/myfx-contacts@labs.mozilla.org $GAIA_DIR/tools/extensions
-- ln -s `pwd`/tools/extensions/myfx-contacts $GAIA_DIR/tools/extensions
-- cd $GAIA_DIR
-- rm -rf profile && DEBUG=1 make
+```
+ln -s `pwd`/tools/extensions/myfx-contacts@labs.mozilla.org $GAIA_DIR/tools/extensions
+ln -s `pwd`/tools/extensions/myfx-contacts $GAIA_DIR/tools/extensions
+cd $GAIA_DIR
+rm -rf profile && DEBUG=1 make
+```
 
 Now run b2g with this profile.
 
 To run the server to receive contacts updates:
 
-- npm install
-- npm start
+```
+npm install
+npm start
+```
 
 ## `mozContacts` API overview
 
