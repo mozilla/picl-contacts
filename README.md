@@ -25,6 +25,10 @@ There are two pieces to this project:
 When the add-on detects a change to your contacts, it tries to POST the changes
 to the local server.
 
+## Demo
+
+https://vimeo.com/58592827
+
 ## Next Steps and Questions
 
 - Acquire user's identity from device
