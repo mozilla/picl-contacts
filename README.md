@@ -1,5 +1,10 @@
 # MyFirefox Contacts
 
+Status: This project only just got started a few days ago and is already on
+hold.  Ah, well.  Please feel free to experiment with it and contribute to it,
+but do not expect the maintainers to be doing much with it at the present
+moment.
+
 Goal: Give users a way to access and manage their contacts from FXOS devices
 and WebRTC-enabled FX clients.
 
@@ -9,6 +14,44 @@ This is one of a set of experimental identity-attached services that include:
 - Bookmarks and Tabs: https://github.com/mozilla/myfx-tabs
 - Contacts: (this)
 - Backend Server: https://github.com/mozilla/myfx-server 
+
+## Overview
+
+There are two pieces to this project:
+
+1. A FirefoxOS add-on that listens for updates to contacts
+2. A simple server for receiving published updates
+
+When the add-on detects a change to your contacts, it tries to POST the changes
+to the local server.
+
+## Next Steps and Questions
+
+- Acquire user's identity from device
+- Make it a proper id-attached service, with auth by identity assertion
+- Associate contacts on server with user's identity
+- Retry sending updates on failure
+- Batch updates with a maximum size
+- Don't send updates if bandwidth is poor
+- Poll server periodically for contacts updates
+- Pull down updates and merge new data (nb, contacts ids are uuids, so this
+  will work)
+
+## Installation
+
+This can be installed as an add-on for FirefoxOS.
+
+- ln -s `pwd`/tools/extensions/myfx-contacts@labs.mozilla.org $GAIA_DIR/tools/extensions
+- ln -s `pwd`/tools/extensions/myfx-contacts $GAIA_DIR/tools/extensions
+- cd $GAIA_DIR
+- rm -rf profile && DEBUG=1 make
+
+Now run b2g with this profile.
+
+To run the server to receive contacts updates:
+
+- npm install
+- npm start
 
 ## `mozContacts` API overview
 
