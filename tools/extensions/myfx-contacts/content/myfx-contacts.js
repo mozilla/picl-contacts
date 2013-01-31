@@ -3,6 +3,9 @@
 const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
 const MYFX_CONTACTS_SERVER_URL = 'http://127.0.0.1:3000';
 
+// ridiculously short interval for testing
+const DEFER_INTERVAL = 1 * 1000;
+
 Cu.import('resource://gre/modules/XPCOMUtils.jsm');
 Cu.import('resource://gre/modules/Services.jsm');
 
@@ -13,6 +16,9 @@ XPCOMUtils.defineLazyServiceGetter(this, 'cpmm',
 XPCOMUtils.defineLazyServiceGetter(this, 'ppmm',
                                    '@mozilla.org/parentprocessmessagemanager;1',
                                    'nsIMessageListenerManager');
+
+XPCOMUtils.defineLazyModuleGetter(this, 'DeferredTask', 
+                                    'resource://gre/modules/DeferredTask.jsm');
 
 /**
  * stringify() - converts a thing to a string
@@ -26,12 +32,13 @@ function stringify(obj) {
       try {
         str = JSON.stringify(obj, null, 2);
       } catch (err) {
-        str = '<<unstringifiable object>>';
+        str = '<<object>>';
       }
       break;
 
     case 'number':
     case 'string':
+    case 'boolean':
       str = obj.toString();
       break;
   }
@@ -59,7 +66,6 @@ this.Service.prototype = {
 
   init: function myfxContacts_init() {
     this._outboundUpdates = {};
-    this._updatesPending = false;
 
     // The ContactManager saves contact data passed into the dom by
     // messaging down to the ContactService.  By subscribing to these
@@ -123,17 +129,55 @@ this.Service.prototype = {
     log('uninit() complete');
   },
 
+  get _deferredUpdate() {
+    if (!this._deferredUpdateTask) {
+      this._deferredUpdateTask = new DeferredTask(
+          this._maybePostUpdates.bind(this), DEFER_INTERVAL);
+    }
+    return this._deferredUpdateTask;
+  },
+
+  /**
+   * _afterPostUpdates - called by _postUpdates; figures out what to do next
+   *
+   * @param success 
+   *        (boolean)   data was successfully posted to remote server
+   *
+   * @param postedData
+   *        (object)    required on success.  The data posted to the server.
+   *
+   * If the push failed, or if there is still data that needs posting, schedule
+   * another update to be done shortly.
+   */
+  _afterPostUpdates: function myfxContacts__afterPostUpdates(success, postedData) {
+    let tryAgain = true;
+    if (success) {
+      postedData.forEach(function(blob) {
+        let update = this._outboundUpdates[blob.id];
+        if (update && update.updated_at <= blob.updated_at) {
+          delete this._outboundUpdates[blob.id];
+        }
+      }.bind(this));
+      tryAgain = Object.keys(this._outboundUpdates).length > 0;
+    }
+
+    if (tryAgain) {
+      log('Still have updates to post; will try again in', DEFER_INTERVAL);
+      this._deferredUpdate.start();
+    }
+  },
+
   /**
    * _postUpdates - try to send updated contact data to the server.
    */
   _postUpdates: function myfxContacts__postUpdates() {
-    // XXX check have bandwidth
-    if (this._updatesPending) {
+    let outboundUpdateKeys = Object.keys(this._outboundUpdates);
+    if (outboundUpdateKeys.length) {
       // keep track of each id and the update time.  If our server push
       // is successful, we will remove from the _outboundUpdates dictionary
       // all the items that have not changed again in the interim.
       let bodyData = [];
-      Object.keys(this._outboundUpdates).forEach(function(update_id) {
+      outboundUpdateKeys.forEach(function(update_id) {
         bodyData.unshift(this._outboundUpdates[update_id]);
       }.bind(this));
 
@@ -148,28 +192,33 @@ this.Service.prototype = {
       req.mozBackgroundRequest = true;
 
       req.onload = function myfxContacts__postUpdate_onload() {
-        log('update: server returned', req.status);
-        // If that worked, remove all the updates from outboundUpdates,
-        // unless their timestamps have changed
+        log('server returned', req.status);
         if (req.status === 200) {
-          bodyData.forEach(function(blob) {
-            let update = this._outboundUpdates[blob.id];
-            if (update && update.updated_at <= blob.updated_at) {
-              delete this._outboundUpdates[blob.id];
-            }
-          }.bind(this));
-          this._updatesPending = false;
+          this._afterPostUpdates(true, bodyData);
         } else {
-          // XXX non-200; try again in a while
+          this._afterPostUpdates(false);
         }
       }.bind(this);
 
       req.onerror = function myfxContacts__postUpdate_onerror() {
         log('request error:', req.status, req.statusText);
-        // XXX try again in a little while
+        this._afterPostUpdates(false);
       }.bind(this);
 
       req.send(body);
+    }
+  },
+  /**
+   * _maybePostUpdates - see if it's a good idea to try to send data 
+   * to the server
+   */
+  _maybePostUpdates: function myfxContacts__maybePostUpdates() {
+    // XXX check have bandwidth
+    if (Services.io.offline) {
+      log('offline; will try again in', DEFER_INTERVAL);
+      this._deferredUpdate.start();
+    } else {
+      this._postUpdates();
     }
   },
 
@@ -185,8 +234,7 @@ this.Service.prototype = {
            action: aMessage.json.options.reason,
            data: contact.properties};
         this._outboundUpdates[contact.id] = update;
-        this._updatesPending = true;
-        this._postUpdates();
+        this._maybePostUpdates();
         break;
       default:
         log('no action for message:', aMessage.name);
