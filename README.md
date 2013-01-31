@@ -61,7 +61,15 @@ npm install
 npm start
 ```
 
-## `mozContacts` API overview
+## Contacts Data Structure and API Notes
+
+- Start here: https://groups.google.com/d/topic/mozilla.dev.webapi/O9NvczNs54M/discussion
+- philikon's webcontacts proposal: https://github.com/philikon/webcontacts
+- W3C Contacts Writer proposal: http://w3c-test.org/dap/contacts/Writer.html
+- W3C Pick Contacts webintent: http://w3c-test.org/dap/contacts/
+- Portable Contacts spec: http://portablecontacts.net/draft-spec.html
+
+## `mozContacts` API Overview
 
 `navigator.mozContacts` provides an asynchronous interface for working with
 contacts, which are stored in the browser using IndexDB.  The 
