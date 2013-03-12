@@ -1,14 +1,10 @@
 # picl Contacts
 
-Status: This project only just got started a few days ago and is already on
-hold.  Ah, well.  Please feel free to experiment with it and contribute to it,
-but do not expect the maintainers to be doing much with it at the present
-moment.
-
 Goal: Give users a way to access and manage their contacts from FXOS devices
-and WebRTC-enabled FX clients.
+and WebRTC-enabled FX clients through a rich set of identity-attached services
+(picl).
 
-This is one of a set of experimental identity-attached services that include:
+Other experimental identity-attached services that include:
 
 - Passwords: https://github.com/mozilla/gombot
 - Bookmarks and Tabs: https://github.com/mozilla/picl-tabs
@@ -21,13 +17,22 @@ There are two pieces to this project:
 
 1. A FirefoxOS add-on that listens for updates to contacts
 2. A simple server for receiving published updates
+3. An indexer for providing fast autocompletion of partial contact names
 
 When the add-on detects a change to your contacts, it tries to POST the changes
 to the local server.
 
+The indexer and completer in its simplest form can be used from any web page
+using [IndexedDB-completer](https://github.com/jedp/IndexedDB-completer)
+
+The implementation of the completer here runs in chrome, and will message
+asynchronously back to clients looking for lists of completions, as in this
+[example use case](http://www.youtube.com/watch?v=2i-eMl33tew) by Crystal
+Beasley.
+
 ## Demo
 
-https://vimeo.com/58592827
+- [30 Jan 2013, update service] https://vimeo.com/58592827
 
 ## Next Steps and Questions
 
