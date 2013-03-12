@@ -4,12 +4,8 @@ let STORE_NAME = "terms";
 let MAX_ROWS = 50;
 
 /**
- * to use indexedDB component from chrome, we use its 
- * initWindowless method to bind to a variable.  As far
- * as I know, the only documentation for this is the 
- * discussion in https://bugzilla.mozilla.org/show_bug.cgi?id=587797
- * and the idl file:
- * http://mxr.mozilla.org/mozilla-central/source/dom/indexedDB/nsIIndexedDatabaseManager.idl#74
+ * Documentation for using indexedDB in chrome is here:
+ * https://developer.mozilla.org/en-US/docs/IndexedDB/Using_IndexedDB_in_chrome
  */
 let dbContext = this;
 
