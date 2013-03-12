@@ -1,7 +1,8 @@
 'use strict';
 
-const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
-const MYFX_CONTACTS_SERVER_URL = 'http://127.0.0.1:3000';
+const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
+const PICL_CONTACTS_SERVER_URL = 'http://127.0.0.1:3000';
+// #define NS_RILCONTENTHELPER_CONTRACTID "@mozilla.org/ril/content-helper;1"
 
 // ridiculously short interval for testing
 const DEFER_INTERVAL = 1 * 1000;
@@ -41,6 +42,14 @@ function stringify(obj) {
     case 'boolean':
       str = obj.toString();
       break;
+
+    case 'function':
+      str = '<<function>>';
+      break;
+
+    default:
+      str = '<<something>>';
+      break;
   }
   return str;
 }
@@ -49,7 +58,7 @@ function stringify(obj) {
  * Log one or more things in a debugging message
  */
 function log(...aMessageArgs) {
-  dump('myfx-contacts: ' +
+  dump('picl-contacts: ' +
        aMessageArgs.map(stringify).join(' ') +
        '\n');
 }
@@ -64,7 +73,8 @@ this.Service.prototype = {
   QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver,
                                          Ci.nsISupportsWeakReference]),
 
-  init: function myfxContacts_init() {
+  init: function piclContacts_init() {
+    log("** picl is in tha house!");
     this._outboundUpdates = {};
 
     // The ContactManager saves contact data passed into the dom by
@@ -82,7 +92,7 @@ this.Service.prototype = {
     // It receives messages and data from the ContactManager that tell it
     // to find, save, remove, or clear all contacts.  On success it returns
     // an OK message, and on failure a corresponding KO message.  There is
-    // a possibility here to save to MyFirefox contact data that couldn't
+    // a possibility here to save to PiclContacts data that couldn't
     // be saved for one reason or another to the device.  This could be
     // useful.  It could also be confusing.
     this._contactServiceMessages = [
@@ -107,7 +117,7 @@ this.Service.prototype = {
     log('init() complete');
   },
 
-  uninit: function myfxContacts_uninit() {
+  uninit: function piclContacts_uninit() {
     try {
       for (let msgName of this._contactManagerMessages) {
         ppmm.removeMessageListener(msgName, this);
@@ -140,7 +150,7 @@ this.Service.prototype = {
   /**
    * _afterPostUpdates - called by _postUpdates; figures out what to do next
    *
-   * @param success 
+   * @param success
    *        (boolean)   data was successfully posted to remote server
    *
    * @param postedData
@@ -149,7 +159,7 @@ this.Service.prototype = {
    * If the push failed, or if there is still data that needs posting, schedule
    * another update to be done shortly.
    */
-  _afterPostUpdates: function myfxContacts__afterPostUpdates(success, postedData) {
+  _afterPostUpdates: function piclContacts__afterPostUpdates(success, postedData) {
     let tryAgain = true;
     if (success) {
       postedData.forEach(function(blob) {
@@ -170,7 +180,7 @@ this.Service.prototype = {
   /**
    * _postUpdates - try to send updated contact data to the server.
    */
-  _postUpdates: function myfxContacts__postUpdates() {
+  _postUpdates: function piclContacts__postUpdates() {
     let outboundUpdateKeys = Object.keys(this._outboundUpdates);
     if (outboundUpdateKeys.length) {
       // keep track of each id and the update time.  If our server push
@@ -186,12 +196,12 @@ this.Service.prototype = {
       let req = Cc['@mozilla.org/xmlextras/xmlhttprequest;1']
                   .createInstance(Ci.nsIXMLHttpRequest);
 
-      req.open('POST', MYFX_CONTACTS_SERVER_URL + '/contacts/update', true);
+      req.open('POST', PICL_CONTACTS_SERVER_URL + '/contacts/update', true);
       req.responseType = 'json';
       req.setRequestHeader('Content-Type', 'application/json');
       req.mozBackgroundRequest = true;
 
-      req.onload = function myfxContacts__postUpdate_onload() {
+      req.onload = function piclContacts__postUpdate_onload() {
         log('server returned', req.status);
         if (req.status === 200) {
           this._afterPostUpdates(true, bodyData);
@@ -200,7 +210,7 @@ this.Service.prototype = {
         }
       }.bind(this);
 
-      req.onerror = function myfxContacts__postUpdate_onerror() {
+      req.onerror = function piclContacts__postUpdate_onerror() {
         log('request error:', req.status, req.statusText);
         this._afterPostUpdates(false);
       }.bind(this);
@@ -212,7 +222,7 @@ this.Service.prototype = {
    * _maybePostUpdates - see if it's a good idea to try to send data 
    * to the server
    */
-  _maybePostUpdates: function myfxContacts__maybePostUpdates() {
+  _maybePostUpdates: function piclContacts__maybePostUpdates() {
     // XXX check have bandwidth
     if (Services.io.offline) {
       log('offline; will try again in', DEFER_INTERVAL);
@@ -245,4 +255,4 @@ this.Service.prototype = {
 
 this.NSGetFactory = XPCOMUtils.generateNSGetFactory([Service]);
 
-this.MyFirefox = new Service();
+this.PiclContacts = new Service();

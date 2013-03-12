@@ -29,6 +29,17 @@ server.addRoute({
   config: update
 });
 
+server.addRoute({
+  path: '/',
+  method: 'GET',
+  config: {
+    handler: function(request) {
+               console.log("got a request");
+               request.reply("<!DOCTYPE html><html><title>foo</title><body>I like pie!</body></html>");
+             }
+  }
+});
+
 if (!module.parent) {
   server.start();
 }

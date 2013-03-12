@@ -1,4 +1,4 @@
-# MyFirefox Contacts
+# picl Contacts
 
 Status: This project only just got started a few days ago and is already on
 hold.  Ah, well.  Please feel free to experiment with it and contribute to it,
@@ -11,9 +11,9 @@ and WebRTC-enabled FX clients.
 This is one of a set of experimental identity-attached services that include:
 
 - Passwords: https://github.com/mozilla/gombot
-- Bookmarks and Tabs: https://github.com/mozilla/myfx-tabs
+- Bookmarks and Tabs: https://github.com/mozilla/picl-tabs
 - Contacts: (this)
-- Backend Server: https://github.com/mozilla/myfx-server 
+- Backend Server: https://github.com/mozilla/picl-server
 
 ## Overview
 
@@ -34,7 +34,7 @@ https://vimeo.com/58592827
 - Acquire user's identity from device
 - Make it a proper id-attached service, with auth by identity assertion
 - Associate contacts on server with user's identity
-- Retry sending updates on failure
+- (done) Retry sending updates on failure
 - Batch updates with a maximum size
 - Don't send updates if bandwidth is poor
 - Poll server periodically for contacts updates
@@ -46,8 +46,8 @@ https://vimeo.com/58592827
 This can be installed as an add-on for FirefoxOS.
 
 ```
-ln -s `pwd`/tools/extensions/myfx-contacts@labs.mozilla.org $GAIA_DIR/tools/extensions
-ln -s `pwd`/tools/extensions/myfx-contacts $GAIA_DIR/tools/extensions
+ln -s `pwd`/tools/extensions/picl-contacts@labs.mozilla.org $GAIA_DIR/tools/extensions
+ln -s `pwd`/tools/extensions/picl-contacts $GAIA_DIR/tools/extensions
 cd $GAIA_DIR
 rm -rf profile && DEBUG=1 make
 ```
