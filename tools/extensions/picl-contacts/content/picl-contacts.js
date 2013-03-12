@@ -64,7 +64,6 @@ function log(...aMessageArgs) {
 }
 
 this.Service = function Service() {
-  log('Hello, world');
 };
 
 this.Service.prototype = {
@@ -74,7 +73,6 @@ this.Service.prototype = {
                                          Ci.nsISupportsWeakReference]),
 
   init: function piclContacts_init() {
-    log("** picl is in tha house!");
     this._outboundUpdates = {};
 
     // The ContactManager saves contact data passed into the dom by
@@ -247,7 +245,7 @@ this.Service.prototype = {
         this._maybePostUpdates();
         break;
       default:
-        log('no action for message:', aMessage.name);
+        log("heard:", aMessage.name);
         break;
     }
   }
